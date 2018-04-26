@@ -10,16 +10,16 @@ import (
 	"github.com/kr/logfmt"
 )
 
-type pair struct {
-	K, V string
-}
-
 type data struct {
-	Items []pair
+	Items map[string]string
 }
 
 func (c *data) HandleLogfmt(key, val []byte) error {
-	c.Items = append(c.Items, pair{K: string(key), V: string(val)})
+	if c.Items == nil {
+		c.Items = make(map[string]string)
+	}
+
+	c.Items[string(key)] = string(val)
 	return nil
 }
 
@@ -47,18 +47,24 @@ func main() {
 		}
 
 		hasItem := false
-		for _, p := range d.Items {
-			if km[p.K] {
-				if hasItem {
-					fmt.Printf(",")
-				}
-
-				fmt.Printf("%s", p.V)
+		var values []string
+		for k := range km {
+			v, ok := d.Items[k]
+			if ok {
 				hasItem = true
 			}
+
+			values = append(values, v)
 		}
 
 		if hasItem {
+			for i, v := range values {
+				if i > 0 {
+					fmt.Printf(",")
+				}
+
+				fmt.Printf(v)
+			}
 			fmt.Printf("\n")
 		}
 	}
