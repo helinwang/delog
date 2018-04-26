@@ -32,12 +32,6 @@ func main() {
 	}
 
 	ks := strings.Split(*keys, ",")
-	km := make(map[string]bool)
-
-	for _, k := range ks {
-		km[k] = true
-	}
-
 	s := bufio.NewScanner(os.Stdin)
 	for s.Scan() {
 		var d data
@@ -48,7 +42,7 @@ func main() {
 
 		hasItem := false
 		var values []string
-		for k := range km {
+		for _, k := range ks {
 			v, ok := d.Items[k]
 			if ok {
 				hasItem = true
